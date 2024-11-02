@@ -1,0 +1,8 @@
+[package]
+name = "snapctx"
+version = "0.1.0"
+edition = "2021"
+authors = ["Serkan Altuntas <serkan@serkan.ai>"]
+description = "A CLI tool to create comprehensive source code summaries for LLM context"
+
+[dependencies]
