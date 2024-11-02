@@ -1,5 +1,6 @@
 use anyhow::Result;
 use thiserror::Error;
+use crate::project::Project;
 
 #[derive(Debug, Error)]
 pub enum DetectorError {
@@ -30,12 +31,35 @@ impl ProjectDetector {
         Self { markers }
     }
 
-    pub fn detect(&self, project: &crate::project::Project) -> Result<ProjectType> {
+    pub fn detect(&self, project: &Project) -> Result<ProjectType> {
         for (project_type, marker) in &self.markers {
             if project.path.join(marker).exists() {
                 return Ok(project_type.clone());
             }
         }
         Ok(ProjectType::Unknown)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempfile::TempDir;
+    use anyhow::Result;
+
+    #[test]
+    fn test_detector_new() {
+        let detector = ProjectDetector::new();
+        assert!(!detector.markers.is_empty());
+    }
+
+    #[test]
+    fn test_detect_unknown_project() -> Result<()> {
+        let temp_dir = TempDir::new()?;
+        let project = Project::new(temp_dir.path())?;
+        let detector = ProjectDetector::new();
+
+        assert!(matches!(detector.detect(&project)?, ProjectType::Unknown));
+        Ok(())
     }
 }

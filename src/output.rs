@@ -6,7 +6,8 @@ use std::{
     path::PathBuf,
 };
 
-use crate::{detector::ProjectType, project::Project};
+use crate::detector::ProjectType;
+use crate::project::Project;
 
 pub struct OutputGenerator {
     batch_mode: bool,
@@ -94,6 +95,34 @@ impl OutputGenerator {
                 .open(output_path)?;
             writeln!(file, "\n## LLM Prompt\n{}", input.trim())?;
         }
+
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempfile::TempDir;
+
+    #[test]
+    fn test_output_generator_creation() {
+        let generator = OutputGenerator::new(true);
+        assert!(generator.batch_mode);
+
+        let generator = OutputGenerator::new(false);
+        assert!(!generator.batch_mode);
+    }
+
+    #[test]
+    fn test_get_output_path() -> Result<()> {
+        let temp_dir = TempDir::new()?;
+        let project = Project::new(temp_dir.path())?;
+        let generator = OutputGenerator::new(true);
+
+        let output_path = generator.get_output_path(&project);
+        assert!(output_path.to_string_lossy().contains("snapshot_"));
+        assert!(output_path.to_string_lossy().ends_with(".md"));
 
         Ok(())
     }

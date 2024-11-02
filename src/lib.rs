@@ -5,9 +5,9 @@ pub mod project;
 
 use anyhow::Result;
 use cli::Cli;
-use detector::ProjectDetector;
-use output::OutputGenerator;
-use project::Project;
+use crate::detector::ProjectDetector;
+use crate::output::OutputGenerator;
+use crate::project::Project;
 
 pub fn run(cli: Cli) -> Result<()> {
     let project = Project::new(&cli.project_path)?;
